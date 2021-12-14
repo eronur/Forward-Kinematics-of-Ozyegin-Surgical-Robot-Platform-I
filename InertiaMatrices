@@ -1,8 +1,14 @@
-clear variables
-close all
-clc
-syms l1 l2 l3 l4 lc1 lc2 lc3 lc4 rup q1 q2 q3 I1 I2 I3 I4 Ib m1 m2 m3 m4 md dq1 dq2 dq3 ddq1 ddq2 ddq3
-% Rotation Matrices
+% This function calculates the dynamic Coriolis effects on the remote stage(upper arms)
+% of the surgical robot. The angles are symbolic since the equation will be
+% used in a for loop that covers desired motion angle range. L: Lengths of robot links, LC: Lengths of center of mass, I: Moment of inertia of the robot links, 
+%M: weight vector of the robot vectors. All vectors are 1x5 in my case
+
+function [JC1,JC2,JC3,JCE] = JacobianRemote(L,LC,I,M)
+
+% syms l1 l2 l3 l4 lc1 lc2 lc3 lc4 rup q1 q2 q3 I1 I2 I3 I4 Ib m1 m2 m3 m4 md dq1 dq2 dq3 ddq1 ddq2 ddq3
+syms q1 q2 q3 dq1 dq2 dq3 ddq1 ddq2 ddq3
+
+%Jacobian Matrices Rotation
 R00=RotateRoll(q1);
 R01=RotateYaw(q2);
 R12=RotateYaw(q3);
@@ -53,29 +59,29 @@ JW2=[diff(W2(1),dq1),diff(W2(1),dq2),diff(W2(1),dq3);diff(W2(2),dq1),diff(W2(2),
 JW3=[diff(W3(1),dq1),diff(W3(1),dq2),diff(W3(1),dq3);diff(W3(2),dq1),diff(W3(2),dq2),diff(W3(2),dq3);diff(W3(3),dq1),diff(W3(3),dq2),diff(W3(3),dq3)];
 JW4=[diff(W4(1),dq1),diff(W4(1),dq2),diff(W4(1),dq3);diff(W4(2),dq1),diff(W4(2),dq2),diff(W4(2),dq3);diff(W4(3),dq1),diff(W4(3),dq2),diff(W4(3),dq3)];
 
-Dw=simplify(transpose(JW0)*Ib*JW0+transpose(JW1)*(I1)*JW1+transpose(JW2)*(I2)*JW2+transpose(JW3)*(I3)*JW3+transpose(JW4)*(I4)*JW4)
+Dw=simplify(transpose(JW0)*I(5)*JW0+transpose(JW1)*(I(1))*JW1+transpose(JW2)*(I(2))*JW2+transpose(JW3)*(I(3))*JW3+transpose(JW4)*(I(4))*JW4)
 %Jacobian Matrices Translation
 %Position of the center of gravity of each link from origin to end effector
-% [xc1,yc1,zc1]=deal(lc1*cos(q1-pi),lc1*sin(q1-pi)*cos(q3),lc1*sin(q1-pi)*sin(q3));
+% [xc1,yc1,zc1]=deal(LC(1)*cos(q1-pi),LC(1)*sin(q1-pi)*cos(q3),LC(1)*sin(q1-pi)*sin(q3));
 % C1=[xc1;yc1;zc1];
-% [xc2,yc2,zc2]=deal(-lc2*cos(2*pi-q2),lc2*sin(2*pi-q2)*cos(q3),lc2*sin(2*pi-q2)*sin(q3));
+% [xc2,yc2,zc2]=deal(-LC(2)*cos(2*pi-q2),LC(2)*sin(2*pi-q2)*cos(q3),LC(2)*sin(2*pi-q2)*sin(q3));
 % C2=[xc2;yc2;zc2];
-% [xc3,yc3,zc3]=deal(l1*cos(q1-pi)-lc3*cos(2*pi-q2),(l1*sin(q1-pi)+lc3*sin(2*pi-q2))*cos(q3),(l1*sin(q1-pi)+lc3*sin(2*pi-q2))*sin(q3));
+% [xc3,yc3,zc3]=deal(L(1)*cos(q1-pi)-LC(3)*cos(2*pi-q2),(L(1)*sin(q1-pi)+LC(3)*sin(2*pi-q2))*cos(q3),(L(1)*sin(q1-pi)+LC(3)*sin(2*pi-q2))*sin(q3));
 % C3=[xc3;yc3;zc3];
-% [xc4,yc4,zc4]=deal(-l2*cos(2*pi-q2)+lc4*cos(q1-pi),(l2*sin(2*pi-q2)+lc4*sin(q1-pi))*cos(q3),(l2*sin(2*pi-q2)+lc4*sin(q1-pi))*sin(q3));
+% [xc4,yc4,zc4]=deal(-L(2)*cos(2*pi-q2)+LC(4)*cos(q1-pi),(L(2)*sin(2*pi-q2)+LC(4)*sin(q1-pi))*cos(q3),(L(2)*sin(2*pi-q2)+LC(4)*sin(q1-pi))*sin(q3));
 % C4=[xc4;yc4;zc4];
-% [xce,yce,zce]=deal(l1*cos(q1-pi)-l3*cos(2*pi-q2)+rup*cos(q2-5*pi/4),(l1*sin(q1-pi)+l3*sin(2*pi-q2)+rup*sin(q2-5*pi/4))*cos(q3),(l1*sin(q1-pi)+l3*sin(2*pi-q2)+rup*sin(q2-5*pi/4))*sin(q3));
+% [xce,yce,zce]=deal(L(1)*cos(q1-pi)-L(3)*cos(2*pi-q2)+L(5)*cos(q2-5*pi/4),(L(1)*sin(q1-pi)+L(3)*sin(2*pi-q2)+L(5)*sin(q2-5*pi/4))*cos(q3),(L(1)*sin(q1-pi)+L(3)*sin(2*pi-q2)+L(5)*sin(q2-5*pi/4))*sin(q3));
 % CE=[xce;yce;zce];
 
-[xc1,yc1,zc1]=deal(lc1*cos(q2-pi),lc1*sin(q2-pi)*cos(q1),lc1*sin(q2-pi)*sin(q1));
+[xc1,yc1,zc1]=deal(LC(1)*cos(q2-pi),LC(1)*sin(q2-pi)*cos(q1),LC(1)*sin(q2-pi)*sin(q1));
 C1=[xc1;yc1;zc1];
-[xc2,yc2,zc2]=deal(-lc2*cos(2*pi-q3),lc2*sin(2*pi-q3)*cos(q1),lc2*sin(2*pi-q3)*sin(q1));
+[xc2,yc2,zc2]=deal(-LC(2)*cos(2*pi-q3),LC(2)*sin(2*pi-q3)*cos(q1),LC(2)*sin(2*pi-q3)*sin(q1));
 C2=[xc2;yc2;zc2];
-[xc3,yc3,zc3]=deal(l1*cos(q2-pi)-lc3*cos(2*pi-q3),(l1*sin(q2-pi)+lc3*sin(2*pi-q3))*cos(q1),(l1*sin(q2-pi)+lc3*sin(2*pi-q3))*sin(q1));
+[xc3,yc3,zc3]=deal(L(1)*cos(q2-pi)-LC(3)*cos(2*pi-q3),(L(1)*sin(q2-pi)+LC(3)*sin(2*pi-q3))*cos(q1),(L(1)*sin(q2-pi)+LC(3)*sin(2*pi-q3))*sin(q1));
 C3=[xc3;yc3;zc3];
-[xc4,yc4,zc4]=deal(-l2*cos(2*pi-q3)+lc4*cos(q2-pi),(l2*sin(2*pi-q3)+lc4*sin(q2-pi))*cos(q1),(l2*sin(2*pi-q3)+lc4*sin(q2-pi))*sin(q1));
+[xc4,yc4,zc4]=deal(-L(2)*cos(2*pi-q3)+LC(4)*cos(q2-pi),(L(2)*sin(2*pi-q3)+LC(4)*sin(q2-pi))*cos(q1),(L(2)*sin(2*pi-q3)+LC(4)*sin(q2-pi))*sin(q1));
 C4=[xc4;yc4;zc4];
-[xce,yce,zce]=deal(l1*cos(q2-pi)-l3*cos(2*pi-q3)+rup*cos(q3-5*pi/4),(l1*sin(q2-pi)+l3*sin(2*pi-q3)+rup*sin(q3-5*pi/4))*cos(q1),(l1*sin(q2-pi)+l3*sin(2*pi-q3)+rup*sin(q3-5*pi/4))*sin(q1));
+[xce,yce,zce]=deal(L(1)*cos(q2-pi)-L(3)*cos(2*pi-q3)+L(5)*cos(q3-5*pi/4),(L(1)*sin(q2-pi)+L(3)*sin(2*pi-q3)+L(5)*sin(q3-5*pi/4))*cos(q1),(L(1)*sin(q2-pi)+L(3)*sin(2*pi-q3)+L(5)*sin(q3-5*pi/4))*sin(q1));
 CE=[xce;yce;zce];
 
 JC1=[diff(C1(1),q1),diff(C1(1),q2),diff(C1(1),q3);diff(C1(2),q1),diff(C1(2),q2),diff(C1(2),q3);diff(C1(3),q1),diff(C1(3),q2),diff(C1(3),q3)];
@@ -84,7 +90,7 @@ JC3=[diff(C3(1),q1),diff(C3(1),q2),diff(C3(1),q3);diff(C3(2),q1),diff(C3(2),q2),
 JC4=[diff(C4(1),q1),diff(C4(1),q2),diff(C4(1),q3);diff(C4(2),q1),diff(C4(2),q2),diff(C4(2),q3);diff(C4(3),q1),diff(C4(3),q2),diff(C4(3),q3)];
 JCE=[diff(CE(1),q1),diff(CE(1),q2),diff(CE(1),q3);diff(CE(2),q1),diff(CE(2),q1),diff(CE(2),q3);diff(CE(3),q1),diff(CE(3),q2),diff(CE(3),q3)];
 
-Dv = simplify(m1*transpose(JC1)*JC1 + m2*transpose(JC2)*JC2 + m3*transpose(JC3)*JC3 + m4*transpose(JC4)*JC4 + md*transpose(JCE)*JCE);%inertia matrices should be added
+Dv = simplify(M(1)*transpose(JC1)*JC1 + M(2)*transpose(JC2)*JC2 + M(3)*transpose(JC3)*JC3 + M(4)*transpose(JC4)*JC4 + M(5)*transpose(JCE)*JCE);%inertia matrices should be added
 %Inertia matrix
 D=Dv+Dw;
 %Christoffel Symbols to derive Coriolis(C) matrix
@@ -112,3 +118,4 @@ C=[c111+c121+c131 c121+c221+c231 c131+c231+c331; c112+c122+c132 c122+c222+c232 c
 Co1=[C(1,1)+C(2,1)+C(3,1)];
 Co2=[C(1,2)+C(2,2)+C(3,2)];
 Co3=[C(1,3)+C(2,3)+C(3,3)];
+end
