@@ -3,7 +3,7 @@
 % used in a for loop that covers desired motion angle range. L: Lengths of robot links, LC: Lengths of center of mass, I: Moment of inertia of the robot links, 
 %M: weight vector of the robot vectors. All vectors are 1x5 in my case
 
-function [JC1,JC2,JC3,JCE] = JacobianRemote(L,LC,I,M)
+function [JC1,JC2,JC3,JCE] = CoriolisRemote(L,LC,I,M)
 
 % syms l1 l2 l3 l4 lc1 lc2 lc3 lc4 rup q1 q2 q3 I1 I2 I3 I4 Ib m1 m2 m3 m4 md dq1 dq2 dq3 ddq1 ddq2 ddq3
 syms q1 q2 q3 dq1 dq2 dq3 ddq1 ddq2 ddq3
