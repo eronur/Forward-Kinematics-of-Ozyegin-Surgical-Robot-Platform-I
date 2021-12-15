@@ -154,24 +154,8 @@ void FKin(double q1, double q2, double q3, double q4, double q5, double *x,
 
   static const signed char d_b[3] = { 1, 0, 0 };
 
-  double V_rotper[1080];
-  double x2[360];
-  double y2[360];
-  double z2[360];
-  double X1[3];
-  double Y1[3];
-  double Z1[3];
-  double V_per_idx_1;
-  double alpha;
-  double mag;
-  double q;
-  double s;
-  double t;
-  double x_tmp;
-  double x_up;
-  double y_tmp;
-  double y_up;
-  double z_up;
+  double V_rotper[1080],x2[360],y2[360],z2[360],X1[3],Y1[3],Z1[3],V_per_idx_1;
+  double alpha,mag,q,s,t,x_tmp,x_up,y_tmp,y_up,z_up;
   int b_i;
   int i;
   int k;
@@ -181,6 +165,7 @@ void FKin(double q1, double q2, double q3, double q4, double q5, double *x,
   signed char cond4[360];
   boolean_T b;
   boolean_T b1;
+  
   if (!isInitialized_FKin) {
     FKin_initialize();
   }
@@ -472,8 +457,3 @@ void FKin(double q1, double q2, double q3, double q4, double q5, double *x,
   /*  textik.com               ||       */
 }
 
-/*
- * File trailer for FKin.c
- *
- * [EOF]
- */
