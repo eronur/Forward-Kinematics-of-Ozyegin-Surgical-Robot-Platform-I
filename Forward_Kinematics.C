@@ -1,4 +1,4 @@
-
+#Forward Kinematics of Ozyegin Surgical Robot Platform I by Onur Ersoy-17.09.2018 
 
 #include "FKin.h"
 #include "FKin_data.h"
